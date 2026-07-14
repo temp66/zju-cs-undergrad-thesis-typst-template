@@ -50,7 +50,8 @@
       family + given
     } else {
       // 英文：根据版本规则决定大小写
-      let family-case-fn = if rules.family-uppercase { upper } else { x => x }
+      // 如果没有 given name，视作 literal（如 {Typst Team}），保持原样
+      let family-case-fn = if rules.family-uppercase and given != "" { upper } else { x => x }
 
       // prefix 作为姓的一部分（demote-non-dropping-particle="never"）
       // 但 prefix 始终保持原样，不受 text-case 影响

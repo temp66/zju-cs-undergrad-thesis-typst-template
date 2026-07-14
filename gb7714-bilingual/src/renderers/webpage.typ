@@ -20,7 +20,7 @@
   let f = entry.fields
   let terms = get-terms(version, lang)
 
-  let authors = format-authors(entry.parsed_names, lang, version: version)
+  let authors = format-authors(entry.parsed_names, lang, version: version, allow-anonymous: false)
   let title = f.at("title", default: "")
   let year = str(f.at("year", default: "")) + year-suffix
   // 发布日期
@@ -76,25 +76,19 @@
       date-part += accessed
     }
   }
-  // 添加日期部分（用句号分隔）
+  // 添加日期部分（用句号加空格分隔）
   if date-part != "" {
-    result = result.trim(".") + "." + date-part
+    result = result.trim(".") + ". " + date-part
   }
 
-  // URL（网页文献的关键信息，可点击链接）
-  if config.show-url and url != "" {
-    let url-link = link(url, url)
-    result = [#result. #url-link]
-  }
+  // 统一使用核心工具处理结尾句号、URL 和 DOI
+  // 为了独立控制访问日期的空格，我们在这里重新配置
+  config.show-accessed = false
+  result = append-access-info(
+    result,
+    entry,
+    config: config,
+  )
 
-  // DOI
-  let doi = f.at("doi", default: "")
-  if config.show-doi and doi != "" {
-    let doi-link = link("https://doi.org/" + doi, [DOI: #doi])
-    result = [#result #doi-link]
-  }
-
-  // 确保以句号结尾
-  // 检查 result 是否以句号结尾（需要处理内容类型）
   result
 }

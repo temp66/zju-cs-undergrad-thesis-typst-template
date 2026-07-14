@@ -171,13 +171,10 @@
   doc
 
   // 隐藏的 bibliography 让 Typst 识别 `@key` 引用语法。
-  // 放在文档末尾 + `place()` + `hide()` 三重保险，确保：
-  //   - 不产生可见内容
-  //   - 不占据正常流中的空间（place 默认浮动到当前位置但不推移后续内容）
-  //   - 不作为文档开头的“内容”触发 `pagebreak(weak: true, to: "odd")` 换页
-  //     （若放在开头，即使是 hide+place 也会让首页非空，导致 weak pagebreak 生效 +
-  //      to: "odd" 再跳一页，出现两页空白，见 issue #13）
-  hide(place(bibliography(bytes(bib-content), title: none)))
+  [
+    #show bibliography: none
+    #bibliography(bytes(bib-content), title: none)
+  ]
 }
 
 // ============================================================================
@@ -541,12 +538,17 @@
     if full-control != none {
       full-control(entries)
     } else if current-style == "numeric" {
-      // 顺序编码制：悬挂缩进
-      set par(hanging-indent: 2em, first-line-indent: 0em)
-      for e in entries {
-        [[#e.order]#h(0.5em)#e.labeled-rendered]
-        parbreak()
-      }
+      grid(
+        columns: 2,
+        row-gutter: 1em,
+        column-gutter: 0.8em,
+        ..entries.map(((order, labeled-rendered)) => {
+          (
+            [[#order]],
+            labeled-rendered,
+          )
+        }).flatten(),
+      )
     } else {
       // 著者-出版年制：悬挂缩进
       set par(hanging-indent: 2em, first-line-indent: 0em)

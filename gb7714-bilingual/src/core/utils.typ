@@ -71,7 +71,7 @@
     if type(mut) == str {
       mut += " " + url-link + "."
     } else {
-      mut = [#mut #url-link]
+      mut = [#mut #url-link.]
     }
   }
 
@@ -81,7 +81,7 @@
     if type(mut) == str {
       mut += " " + doi-link + "."
     } else {
-      mut = [#mut #doi-link]
+      mut = [#mut #doi-link.]
     }
   }
 
